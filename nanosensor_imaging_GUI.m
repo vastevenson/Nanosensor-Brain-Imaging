@@ -16,7 +16,7 @@ function varargout = nanosensor_imaging_GUI(varargin)
 %      stop.  All inputs are passed to nanosensor_imaging_GUI_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-%      instance to run (singleton)".
+%      instance to run (singleton)"
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
