@@ -22,7 +22,7 @@ function varargout = nanosensor_imaging_GUI(varargin)
 
 % Edit the above text to modify the response to help nanosensor_imaging_GUI
 
-% Last Modified by GUIDE v2.5 10-May-2018 16:57:16
+% Last Modified by GUIDE v2.5 16-Aug-2018 22:21:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -43,7 +43,6 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-
 % --- Executes just before nanosensor_imaging_GUI is made visible.
 function nanosensor_imaging_GUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
@@ -57,6 +56,8 @@ handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
+isLoaded=0;
+assignin('base','isLoaded',isLoaded)
 
 % UIWAIT makes nanosensor_imaging_GUI wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -101,10 +102,11 @@ else
 
     %Update listbox containing list of each ROI for selection
     roiNames = nonzeros(unique(handles.dataset.Lmatrix));
-    roiNamesStr = num2str(roiNames);
+    roiNamesStr = num2str(roiNames);    
     set(handles.roi_listbox,'Value',1); %Set "selected" listbox value to 1 to prevent error
     set(handles.roi_listbox,'string',roiNamesStr);
-    
+    isLoaded=1;
+    assignin('base','isLoaded',isLoaded)
 end
 % --- Executes on button press in processfilebutton.
 function processfilebutton_Callback(hObject, eventdata, handles)
@@ -795,9 +797,83 @@ subRoiCalculationsTime2Peak(handles);
 
 
 % --- Executes on button press in medianBaselineFilter.
-function medianBaselineFilter_Callback(hObject, eventdata, handles)
-% hObject    handle to medianBaselineFilter (see GCBO)
+    function medianBaselineFilter_Callback(hObject, eventdata, handles)
+        % hObject    handle to medianBaselineFilter (see GCBO)
+        % eventdata  reserved - to be defined in a future version of MATLAB
+        % handles    structure with handles and user data (see GUIDATA)
+        
+        % Hint: get(hObject,'Value') returns toggle state of medianBaselineFilter
+        
+function stimulusFrame_Callback(hObject, eventdata, handles)
+% hObject    handle to stimulusFrame (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of medianBaselineFilter
+% Hints: get(hObject,'String') returns contents of stimulusFrame as text
+%        str2double(get(hObject,'String')) returns contents of stimulusFrame as a double
+sf=str2double(get(hObject,'String'));
+set(handles.stimFrame,'string','Click Filter after loading data.');
+%sf is the stimulus frame, which will be passed to filter function
+
+% --- Executes during object creation, after setting all properties.
+function stimulusFrame_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to stimulusFrame (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in filterButton.
+function filterButton_Callback(hObject, eventdata, handles, isLoaded)
+% hObject    handle to filterButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+%If data hasn't been loaded, can't apply filter, create new bool in
+%loadbutton
+isLoaded=evalin('base','isLoaded');
+if(isLoaded)
+    currentDataset = evalin('base','currentDataset');%grab currentDataset struct from workspace
+    if(get(handles.stimulusFrame,'String')~="")
+        sf=str2double(get(handles.stimulusFrame,'String'));%store the stimulus frame provided
+        %call the appropriate function with that stimulus frame
+        %                  disp(sf)
+        %https://www.mathworks.com/matlabcentral/answers/42467-gui-and-work-space-data-sharing
+
+        %         disp(currentDataset.measuredValues(1).dF)
+        currentDataset = filterROI(sf,currentDataset);
+        %export the filtered currentDataset to base workspace
+        assignin('base','currentDataset',currentDataset);
+        %update the GUI with the valid ROIs
+        %currentDataset.validMeasuredValues.ROInum contains the updated ROIs
+        %update the listbox with the valid ROIs
+        ROInum = currentDataset.validMeasuredValues.ROInum;
+        %     disp(ROInum)
+        roiNamesStr = num2str(ROInum);
+        set(handles.roi_listbox,'Value',1); %Set "selected" listbox value to 1 to prevent error
+        set(handles.roi_listbox,'string',roiNamesStr);
+        set(handles.stimFrame,'string','The filter has been applied; the ROI list has been updated.');
+        %function []=plotResults(mask,avgImage,measuredValues,frameRate, handles)
+        %     mask=currentDataset.validMask;
+        %     avgImage=currentDataset.avgStack;
+        %     measuredValues=currentDataset.validMeasuredValues;
+        %     frameRate=str2double(get(handles.enterframerate,'String'));
+        %     handles=get(handles.loadbutton);
+        %     plotResults(mask,avgImage,measuredValues,frameRate, handles);
+    else
+        set(handles.stimFrame,'string','A stimulus frame must be specified.');
+    end
+else
+    set(handles.stimFrame,'string','The data must first be loaded.');
+end
+
+
+    
+    
+    
+    
