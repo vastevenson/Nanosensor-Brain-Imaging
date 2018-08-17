@@ -1,7 +1,7 @@
 function A = linBases(B,sf)
-%This function will determine if the baseline for the first 12% and last
-%24% of frames have sharply positive or negative trends (indicating a
-%failure to return to baseline, clearance).
+%This function will determine if the initial and terminal baselines are
+%relatively linear (have slopes significantly less than maximum slope around
+%stimulus frame).
 %Nonlinear baselines are defined to be those that have a slope exceeding
 %70% of the maximum slope 
 roiCount=size(B,1);
