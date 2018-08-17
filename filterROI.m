@@ -3,7 +3,7 @@ function S = filterROI(sf,currentDataset)
 %determine if a significant response occurs around the stimulus frame, and
 %linBases to determine if the initial and terminal baselines are flat
 %enough relative to the response to be considered valid. A new struct is
-%returned
+%returned.
 
 n=size(currentDataset.measuredValues,2);%number of ROIs defined
 
