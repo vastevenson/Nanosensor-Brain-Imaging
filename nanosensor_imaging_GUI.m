@@ -20,7 +20,7 @@ function varargout = nanosensor_imaging_GUI(varargin)
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help nanosensor_imaging_GUI
+% Edit the above text to modify the response to help nanosensor_imaging_GUI.
 
 % Last Modified by GUIDE v2.5 16-Aug-2018 22:21:09
 
